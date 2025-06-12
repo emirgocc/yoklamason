@@ -42,3 +42,6 @@ try:
 except Exception as e:
     print(f"\n❌ MongoDB hatası: {e}")
     raise e
+
+# dosyanın en sonuna şunu ekle
+__all__ = ["db"]

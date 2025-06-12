@@ -10,54 +10,38 @@ from pymongo import MongoClient
 
 attendance_routes = Blueprint('attendance', __name__)
 
-# MongoDB bağlantısı
-try:
-    client = MongoClient('mongodb://localhost:27017/')
-    db = client['yoklama_sitemi']
-    # Bağlantıyı test et
-    client.server_info()
-    print("[INFO] MongoDB bağlantısı başarılı")
-except Exception as e:
-    print(f"[ERROR] MongoDB bağlantı hatası: {str(e)}")
-    print("[INFO] Dummy veritabanı kullanılıyor")
-    db = None
 
 @attendance_routes.route('/active-courses/<ogrno>', methods=['GET'])
 def get_active_courses(ogrno):
     try:
+        ogrno = str(ogrno)  # Bu satır eklendi
         print(f"[DEBUG] Öğrenci no: {ogrno} için aktif dersler getiriliyor")
         
-        # Aktif dersleri getir
         active_courses = list(db.attendance.find({
             "durum": "aktif",
             "tumOgrenciler": ogrno
         }))
         
-        # Her ders için katılım durumunu kontrol et
         formatted_courses = []
         for course in active_courses:
             course_id = str(course['_id'])
-            
-            # Öğretmen adını al
+
             ogretmen = db.users.find_one({"mail": course.get('ogretmenMail')})
             ogretmen_adi = f"{ogretmen['ad']} {ogretmen['soyad']}" if ogretmen else course.get('ogretmenMail')
-            
-            # Katılım durumunu katilanlar dizisinden kontrol et
+
             katilim_yapildi = ogrno in course.get('katilanlar', [])
-            
-            formatted_course = {
+
+            formatted_courses.append({
                 '_id': course_id,
                 'dersKodu': course['dersKodu'],
                 'dersAdi': course['dersAdi'],
                 'katilimYapildi': katilim_yapildi,
                 'ogretmenler': [ogretmen_adi],
                 'tarih': course.get('tarih')
-            }
-            
-            formatted_courses.append(formatted_course)
-        
+            })
+
         return jsonify(formatted_courses)
-        
+
     except Exception as e:
         print(f"[HATA] Aktif dersler getirme hatası: {str(e)}")
         return jsonify({'error': str(e)}), 500
