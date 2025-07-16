@@ -7,7 +7,6 @@ const CoursesTab = ({
   onAddNewClick,
   onEditClick,
   onDeleteClick,
-  // Modal için props'lar
   isModalOpen,
   closeModal,
   courseData,
@@ -16,7 +15,7 @@ const CoursesTab = ({
 }) => {
   return (
     <div className="content-container">
-      {/* BAŞLIK VE YENİ EKLE BUTONU */}
+      {/* BAŞLIK */}
       <div className="level">
         <div className="level-left">
           <div className="level-item"><h2 className="title is-4">Dersler</h2></div>
@@ -44,8 +43,8 @@ const CoursesTab = ({
             </tr>
           </thead>
           <tbody>
-            {courses.map((course) => (
-              <tr key={course._id}>
+            {courses.map((course, index) => (
+              <tr key={course._id?.$oid || course._id || `${course.dersKodu}-${index}`}>
                 <td>{course.dersKodu}</td>
                 <td>{course.dersAdi}</td>
                 <td>{course.ogretmenler?.length || 0}</td>
@@ -55,7 +54,7 @@ const CoursesTab = ({
                     <button className="button is-info" onClick={() => onEditClick(course)}>
                       <span className="icon"><i className="fas fa-edit"></i></span>
                     </button>
-                    <button className="button is-danger" onClick={() => onDeleteClick(course._id)}>
+                    <button className="button is-danger" onClick={() => onDeleteClick(course._id?.$oid || course._id)}>
                       <span className="icon"><i className="fas fa-trash"></i></span>
                     </button>
                   </div>
@@ -66,42 +65,98 @@ const CoursesTab = ({
         </table>
       </div>
 
-      {/* DERS EKLEME/DÜZENLEME MODAL'I */}
+      {/* MODAL */}
       <div className={`modal ${isModalOpen ? 'is-active' : ''}`}>
         <div className="modal-background" onClick={closeModal}></div>
         <div className="modal-card">
           <header className="modal-card-head">
-            <p className="modal-card-title">{courseData._id ? "Ders Düzenle" : "Yeni Ders Ekle"}</p>
-            <button className="delete" aria-label="close" onClick={closeModal}></button>
+            <p className="modal-card-title">
+              {courseData._id ? "Ders Düzenle" : "Yeni Ders Ekle"}
+            </p>
+            <button className="delete" onClick={closeModal}></button>
           </header>
           <section className="modal-card-body">
-            <div className="field"><label className="label">Ders Kodu</label><div className="control"><input className="input" type="text" value={courseData.dersKodu} onChange={(e) => setCourseData({ ...courseData, dersKodu: e.target.value })} /></div></div>
-            <div className="field"><label className="label">Ders Adı</label><div className="control"><input className="input" type="text" value={courseData.dersAdi} onChange={(e) => setCourseData({ ...courseData, dersAdi: e.target.value })} readOnly={!!courseData._id} />{courseData._id && <p className="help is-info">Mevcut ders adı değiştirilemez</p>}</div></div>
+            <div className="field">
+              <label className="label">Ders Kodu</label>
+              <div className="control">
+                <input
+                  className="input"
+                  type="text"
+                  value={courseData.dersKodu}
+                  onChange={(e) => setCourseData({ ...courseData, dersKodu: e.target.value })}
+                />
+              </div>
+            </div>
+            <div className="field">
+              <label className="label">Ders Adı</label>
+              <div className="control">
+                <input
+                  className="input"
+                  type="text"
+                  value={courseData.dersAdi}
+                  onChange={(e) => setCourseData({ ...courseData, dersAdi: e.target.value })}
+                  readOnly={!!courseData._id}
+                />
+                {courseData._id && (
+                  <p className="help is-info">Mevcut ders adı değiştirilemez</p>
+                )}
+              </div>
+            </div>
+
             <div className="field">
               <label className="label">Öğretmenler</label>
               <div className="control">
                 <div className="select is-multiple is-fullwidth">
-                  <select multiple value={courseData.ogretmenler || []} onChange={(e) => setCourseData({ ...courseData, ogretmenler: Array.from(e.target.selectedOptions, option => option.value) })} size="4">
-                    {teachers.map((teacher) => (<option key={teacher.mail} value={teacher.mail}>{teacher.ad} {teacher.soyad} ({teacher.mail})</option>))}
+                  <select
+                    multiple
+                    value={courseData.ogretmenler || []}
+                    onChange={(e) =>
+                      setCourseData({
+                        ...courseData,
+                        ogretmenler: Array.from(e.target.selectedOptions, (option) => option.value),
+                      })
+                    }
+                    size="4"
+                  >
+                    {teachers.map((teacher, index) => (
+                      <option key={teacher.mail || `teacher-${index}`} value={teacher.mail}>
+                        {teacher.ad} {teacher.soyad} ({teacher.mail})
+                      </option>
+                    ))}
                   </select>
                 </div>
-                <p className="help">Ctrl tuşuna basarak birden fazla öğretmen seçebilirsiniz.</p>
               </div>
             </div>
+
             <div className="field">
               <label className="label">Öğrenciler</label>
               <div className="control">
                 <div className="select is-multiple is-fullwidth">
-                  <select multiple value={courseData.ogrenciler || []} onChange={(e) => setCourseData({ ...courseData, ogrenciler: Array.from(e.target.selectedOptions, option => option.value) })} size="4">
-                    {students.map((student) => (<option key={student.ogrno} value={student.ogrno}>{student.ad} {student.soyad} ({student.ogrno})</option>))}
+                  <select
+                    multiple
+                    value={courseData.ogrenciler || []}
+                    onChange={(e) =>
+                      setCourseData({
+                        ...courseData,
+                        ogrenciler: Array.from(e.target.selectedOptions, (option) => option.value),
+                      })
+                    }
+                    size="4"
+                  >
+                    {students.map((student, index) => (
+                      <option key={student.ogrno || `student-${index}`} value={student.ogrno}>
+                        {student.ad} {student.soyad} ({student.ogrno})
+                      </option>
+                    ))}
                   </select>
                 </div>
-                <p className="help">Ctrl tuşuna basarak birden fazla öğrenci seçebilirsiniz.</p>
               </div>
             </div>
           </section>
           <footer className="modal-card-foot">
-            <button className="button is-primary" onClick={handleSaveCourse}>{courseData._id ? "Güncelle" : "Oluştur"}</button>
+            <button className="button is-primary" onClick={handleSaveCourse}>
+              {courseData._id ? "Güncelle" : "Oluştur"}
+            </button>
             <button className="button" onClick={closeModal}>İptal</button>
           </footer>
         </div>

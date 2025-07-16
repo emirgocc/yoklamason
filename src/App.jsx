@@ -75,7 +75,8 @@ function App() {
                   {user.role === "teacher" ? (
                     <TeacherPanel user={user} onLogout={handleLogout} />
                   ) : (
-                    <StudentPanel user={user} onLogout={handleLogout} />
+                    <StudentPanel user={user} ogrenciId={user?.ogrno} onLogout={handleLogout} />
+
                   )}
                 </div>
               </div>

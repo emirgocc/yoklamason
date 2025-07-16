@@ -2,10 +2,10 @@ import React from 'react';
 
 const AdminTabs = ({ activeTab, setActiveTab }) => {
   const tabs = [
-    { name: 'Dersler', icon: 'fa-book' },
-    { name: 'Öğretmenler', icon: 'fa-chalkboard-teacher' },
-    { name: 'Öğrenciler', icon: 'fa-user-graduate' },
-    { name: 'Yoklama Verileri', icon: 'fa-clipboard-list' },
+    { key: 'courses', name: 'Dersler', icon: 'fa-book' },
+    { key: 'teachers', name: 'Öğretmenler', icon: 'fa-chalkboard-teacher' },
+    { key: 'students', name: 'Öğrenciler', icon: 'fa-user-graduate' },
+    { key: 'attendance', name: 'Yoklama Verileri', icon: 'fa-clipboard-list' },
   ];
 
   return (
@@ -13,7 +13,7 @@ const AdminTabs = ({ activeTab, setActiveTab }) => {
       <div className="tabs is-boxed">
         <ul>
           {tabs.map((tab, index) => (
-            <li key={index} className={activeTab === index ? "is-active" : ""}>
+            <li key={tab.key} className={activeTab === index ? 'is-active' : ''}>
               <a onClick={() => setActiveTab(index)}>
                 <span className="icon is-small"><i className={`fas ${tab.icon}`}></i></span>
                 <span>{tab.name}</span>

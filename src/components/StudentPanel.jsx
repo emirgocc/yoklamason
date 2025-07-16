@@ -20,7 +20,7 @@ const StudentPanel = ({ user, onLogout }) => {
     try {
       console.log("[DEBUG] Aktif dersler isteniyor...");
       console.log("[DEBUG] Kullanıcı bilgileri:", user);
-      
+
       if (!user || !user.ogrno) {
         console.log("[HATA] Kullanıcı bilgileri eksik!");
         return;
@@ -34,19 +34,19 @@ const StudentPanel = ({ user, onLogout }) => {
       });
 
       console.log("[DEBUG] API yanıtı:", response);
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
       console.log("[DEBUG] Backend'den gelen dersler ve katılım durumları:", data);
       data.forEach(course => {
         console.log(`[DEBUG] ${course.dersKodu}: katilimYapildi = ${course.katilimYapildi}`);
       });
-      
+
       setActiveCourses(data);
-      
+
     } catch (error) {
       console.error('[HATA] Aktif dersler yüklenirken hata:', error);
       setAlertMessage({
@@ -195,9 +195,9 @@ const StudentPanel = ({ user, onLogout }) => {
         if (response.ok) {
           setIsAuthenticated(true);
           setShowPopup(false);
-          
+
           await fetchActiveCourses();
-          
+
           setAlertMessage({
             severity: "success",
             text: `${selectedCourse.dersAdi} dersine başarıyla giriş yaptınız.`
@@ -266,8 +266,8 @@ const StudentPanel = ({ user, onLogout }) => {
                       <div style={{ width: '100%' }}>
                         <div className="is-flex is-justify-content-space-between is-align-items-center mb-1">
                           <div style={{ flex: 1, marginRight: '1rem', overflow: 'hidden' }}>
-                            <p className="mb-0" style={{ 
-                              wordBreak: 'break-word', 
+                            <p className="mb-0" style={{
+                              wordBreak: 'break-word',
                               display: '-webkit-box',
                               WebkitLineClamp: 2,
                               WebkitBoxOrient: 'vertical',
@@ -350,7 +350,7 @@ const StudentPanel = ({ user, onLogout }) => {
         position: 'fixed',
         left: '36px',
         bottom: '36px',
-        zIndex: 29  
+        zIndex: 29
       }}>
         <button
           className="button is-info is-light"
@@ -364,7 +364,7 @@ const StudentPanel = ({ user, onLogout }) => {
       </div>
 
       {/* Devamsızlık Takibi Modal */}
-      <AttendanceTracking 
+      <AttendanceTracking
         isActive={showAttendanceTracking}
         onClose={() => setShowAttendanceTracking(false)}
         studentId={user.ogrno}
@@ -383,13 +383,12 @@ const StudentPanel = ({ user, onLogout }) => {
               <h3 className="has-text-centered mb-4">
                 {selectedCourse ? `${selectedCourse.dersKodu} - ${selectedCourse.dersAdi}` : ''} dersine giriş yapmak için doğrulama yapın.
               </h3>
-              
+
               <div className="buttons is-flex is-flex-direction-column">
                 {!showCodeInput ? (
                   <button
-                    className={`button is-fullwidth ${
-                      isSmsVerified ? "is-light" : "is-info"
-                    }`}
+                    className={`button is-fullwidth ${isSmsVerified ? "is-light" : "is-info"
+                      }`}
                     onClick={handleEmailVerification}
                     disabled={isSmsVerified}
                     style={isSmsVerified ? {
@@ -422,7 +421,7 @@ const StudentPanel = ({ user, onLogout }) => {
                         </button>
                       </div>
                     </div>
-                    <div className="has-text-centered" style={{ 
+                    <div className="has-text-centered" style={{
                       opacity: 0.7,
                       fontSize: '0.9rem',
                       color: '#666',
@@ -434,7 +433,7 @@ const StudentPanel = ({ user, onLogout }) => {
                     <button
                       className="button is-text is-fullwidth"
                       onClick={handleEmailVerification}
-                      style={{ 
+                      style={{
                         opacity: 0.7,
                         fontSize: '0.9rem',
                         color: '#666',
@@ -454,9 +453,8 @@ const StudentPanel = ({ user, onLogout }) => {
 
                 {!showFaceVerification ? (
                   <button
-                    className={`button is-fullwidth ${
-                      isFaceVerified ? "is-light" : "is-info"
-                    }`}
+                    className={`button is-fullwidth ${isFaceVerified ? "is-light" : "is-info"
+                      }`}
                     onClick={handleFaceVerification}
                     disabled={isFaceVerified}
                     style={isFaceVerified ? {
@@ -467,12 +465,14 @@ const StudentPanel = ({ user, onLogout }) => {
                     {isFaceVerified ? "Yüz Tanıma Doğrulandı" : "Yüz Tanıma Doğrula"}
                   </button>
                 ) : (
-                  <FaceVerification 
+                  <FaceVerification
                     courseId={selectedCourse?._id}
+                    ogrenciId={user.ogrno} // 🟢 ÖĞRENCİ ID'Yİ GÖNDERİYORSUN
                     onSuccess={handleFaceSuccess}
                     onError={handleFaceError}
                     onCancel={handleFaceCancel}
                   />
+
                 )}
 
                 {isSmsVerified && isFaceVerified && (

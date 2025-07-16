@@ -1,14 +1,11 @@
 import React from 'react';
 
-// Öğrenci ekleme/düzenleme modal'ını da ayırabiliriz ama şimdilik burada kalsın.
-// Eğer o da çok büyürse StudentModal.js olarak ayrılır.
 const StudentsTab = ({
   students,
   onAddNewClick,
   onEditClick,
   onDeleteClick,
   onFaceUploadClick,
-  // Modal için props'lar
   isModalOpen,
   closeModal,
   studentData,
@@ -17,7 +14,7 @@ const StudentsTab = ({
 }) => {
   return (
     <div className="content-container">
-      {/* BAŞLIK VE YENİ EKLE BUTONU */}
+      {/* BAŞLIK */}
       <div className="level">
         <div className="level-left">
           <div className="level-item"><h2 className="title is-4">Öğrenciler</h2></div>
@@ -32,7 +29,7 @@ const StudentsTab = ({
         </div>
       </div>
 
-      {/* ÖĞRENCİ TABLOSU */}
+      {/* TABLO */}
       <div className="table-container">
         <table className="table is-fullwidth is-striped is-hoverable">
           <thead>
@@ -45,8 +42,8 @@ const StudentsTab = ({
             </tr>
           </thead>
           <tbody>
-            {students.map((student) => (
-              <tr key={student._id ? student._id.toString() : `student-${student.ogrno || Math.random()}`}>
+            {students.map((student, index) => (
+              <tr key={student._id?.$oid || student._id || `student-${student.ogrno || index}`}>
                 <td>{student.ogrno}</td>
                 <td>{student.ad}</td>
                 <td>{student.soyad}</td>
@@ -59,7 +56,7 @@ const StudentsTab = ({
                     <button className="button is-info" onClick={() => onEditClick(student)}>
                       <span className="icon"><i className="fas fa-edit"></i></span>
                     </button>
-                    <button className="button is-danger" onClick={() => onDeleteClick(student._id ? student._id.toString() : student.ogrno || '')}>
+                    <button className="button is-danger" onClick={() => onDeleteClick(student._id || student.ogrno)}>
                       <span className="icon"><i className="fas fa-trash"></i></span>
                     </button>
                   </div>
@@ -70,7 +67,7 @@ const StudentsTab = ({
         </table>
       </div>
 
-      {/* ÖĞRENCİ EKLEME/DÜZENLEME MODAL'I */}
+      {/* MODAL */}
       <div className={`modal ${isModalOpen ? 'is-active' : ''}`}>
         <div className="modal-background" onClick={closeModal}></div>
         <div className="modal-card">
@@ -79,7 +76,6 @@ const StudentsTab = ({
             <button className="delete" aria-label="close" onClick={closeModal}></button>
           </header>
           <section className="modal-card-body">
-            {/* Form Alanları */}
             <div className="field"><label className="label">Ad</label><div className="control"><input className="input" type="text" value={studentData.ad} onChange={(e) => setStudentData({ ...studentData, ad: e.target.value })} /></div></div>
             <div className="field"><label className="label">Soyad</label><div className="control"><input className="input" type="text" value={studentData.soyad} onChange={(e) => setStudentData({ ...studentData, soyad: e.target.value })} /></div></div>
             <div className="field"><label className="label">Öğrenci Numarası</label><div className="control"><input className="input" type="text" value={studentData.ogrno} onChange={(e) => setStudentData({ ...studentData, ogrno: e.target.value })} /></div></div>
@@ -87,9 +83,7 @@ const StudentsTab = ({
             {!studentData._id && (<div className="field"><label className="label">Şifre</label><div className="control"><input className="input" type="password" value={studentData.sifre} onChange={(e) => setStudentData({ ...studentData, sifre: e.target.value })} /></div></div>)}
           </section>
           <footer className="modal-card-foot">
-            <button className="button is-primary" onClick={handleSaveStudent}>
-              {studentData._id ? "Güncelle" : "Ekle"}
-            </button>
+            <button className="button is-primary" onClick={handleSaveStudent}>{studentData._id ? "Güncelle" : "Ekle"}</button>
             <button className="button" onClick={closeModal}>İptal</button>
           </footer>
         </div>

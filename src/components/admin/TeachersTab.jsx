@@ -5,7 +5,6 @@ const TeachersTab = ({
   onAddNewClick,
   onEditClick,
   onDeleteClick,
-  // Modal için props'lar
   isModalOpen,
   closeModal,
   teacherData,
@@ -14,7 +13,7 @@ const TeachersTab = ({
 }) => {
   return (
     <div className="content-container">
-      {/* BAŞLIK VE YENİ EKLE BUTONU */}
+      {/* BAŞLIK */}
       <div className="level">
         <div className="level-left">
           <div className="level-item"><h2 className="title is-4">Öğretmenler</h2></div>
@@ -29,7 +28,7 @@ const TeachersTab = ({
         </div>
       </div>
 
-      {/* ÖĞRETMEN TABLOSU */}
+      {/* TABLO */}
       <div className="table-container">
         <table className="table is-fullwidth is-striped is-hoverable">
           <thead>
@@ -42,29 +41,32 @@ const TeachersTab = ({
             </tr>
           </thead>
           <tbody>
-            {teachers.map((teacher) => (
-              <tr key={teacher._id}>
-                <td>{teacher.ad}</td>
-                <td>{teacher.soyad}</td>
-                <td>{teacher.mail}</td>
-                <td>{teacher.telno}</td>
-                <td>
-                  <div className="buttons are-small">
-                    <button className="button is-info" onClick={() => onEditClick(teacher)}>
-                      <span className="icon"><i className="fas fa-edit"></i></span>
-                    </button>
-                    <button className="button is-danger" onClick={() => onDeleteClick(teacher._id)}>
-                      <span className="icon"><i className="fas fa-trash"></i></span>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+            {teachers.map((teacher, index) => {
+              const key = teacher._id?.$oid || teacher._id || `teacher-${teacher.mail || index}`;
+              return (
+                <tr key={key}>
+                  <td>{teacher.ad}</td>
+                  <td>{teacher.soyad}</td>
+                  <td>{teacher.mail}</td>
+                  <td>{teacher.telno}</td>
+                  <td>
+                    <div className="buttons are-small">
+                      <button className="button is-info" onClick={() => onEditClick(teacher)}>
+                        <span className="icon"><i className="fas fa-edit"></i></span>
+                      </button>
+                      <button className="button is-danger" onClick={() => onDeleteClick(teacher._id?.$oid || teacher._id)}>
+                        <span className="icon"><i className="fas fa-trash"></i></span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
 
-      {/* ÖĞRETMEN EKLEME/DÜZENLEME MODAL'I */}
+      {/* MODAL */}
       <div className={`modal ${isModalOpen ? 'is-active' : ''}`}>
         <div className="modal-background" onClick={closeModal}></div>
         <div className="modal-card">

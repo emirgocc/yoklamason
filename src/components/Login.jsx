@@ -9,8 +9,9 @@ const Login = ({ onLogin }) => {
 
   useEffect(() => {
     const savedUser = JSON.parse(localStorage.getItem("rememberMe"));
-    if (savedUser && savedUser.username) {
+    if (savedUser?.username) {
       setUsername(savedUser.username);
+      setRememberMe(true);
     }
   }, []);
 
@@ -18,76 +19,70 @@ const Login = ({ onLogin }) => {
     try {
       const loginData = {
         mail: username,
-        sifre: password
+        sifre: password,
       };
 
-      console.log("Login isteği gönderiliyor:", loginData); // Debug log
-
-      const response = await fetch('http://localhost:5000/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(loginData)
+      const response = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(loginData),
       });
 
       const data = await response.json();
-      console.log("Login yanıtı:", data); // Debug log
+      console.log("[DEBUG] Login yanıtı:", data);
 
       if (response.ok) {
-        // Beni Hatırla seçeneği işaretliyse kullanıcı adını kaydet
+        // Öğrenci numarasını sakla
+        localStorage.setItem("ogrenciId", data.user.ogrno);
+        console.log("[DEBUG] ogrenciId localStorage'a yazıldı:", data.user.ogrno);
+
+        // Beni Hatırla
         if (rememberMe) {
           localStorage.setItem("rememberMe", JSON.stringify({ username }));
         } else {
           localStorage.removeItem("rememberMe");
         }
 
-        // Kullanıcı bilgilerini ve rolü ilet
+        // Giriş başarılıysa bilgileri onLogin ile ilet
         const userData = {
           mail: data.user.mail,
           role: data.user.role,
           ad: data.user.ad,
           soyad: data.user.soyad,
           ogrno: data.user.ogrno,
-          username: `${data.user.ad} ${data.user.soyad}`
+          username: `${data.user.ad} ${data.user.soyad}`,
         };
-        console.log("Login başarılı, userData:", userData); // Debug log
+
         onLogin(userData);
       } else {
-        setError(data.error || 'Giriş başarısız');
+        setError(data.error || "Giriş başarısız");
       }
-    } catch (error) {
-      console.error('Login error:', error);
-      setError('Bağlantı hatası: ' + error.message);
+    } catch (err) {
+      console.error("[ERROR] Login:", err);
+      setError("Bağlantı hatası: " + err.message);
     }
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault(); // Formun varsayılan davranışını engelle
+    e.preventDefault();
     handleLogin();
   };
 
   return (
     <>
-     {error && (
-        <div className="message-container">
-          <div className="message is-danger">
-            <div className="message-body">
-              <button 
-                className="delete" 
-                aria-label="delete"
-                onClick={() => setError("")}
-              ></button>
-              {error}
-            </div>
+      {error && (
+        <div className="message is-danger">
+          <div className="message-body">
+            <button className="delete" onClick={() => setError("")}></button>
+            {error}
           </div>
         </div>
       )}
+
       <p className="subtitle has-text-centered is-6 mb-4">
         Hoşgeldiniz, yoklama sistemine giriş yapınız.
       </p>
 
-      {/* Form */}
       <form onSubmit={handleSubmit}>
         <div className="field">
           <div className="control">
@@ -97,6 +92,7 @@ const Login = ({ onLogin }) => {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Kurumsal e-postanızı girin"
+              required
             />
           </div>
         </div>
@@ -109,13 +105,14 @@ const Login = ({ onLogin }) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Şifrenizi girin"
+              required
             />
-            <span 
-              className="icon is-small is-right" 
-              style={{ cursor: 'pointer', pointerEvents: 'all' }}
+            <span
+              className="icon is-small is-right"
               onClick={() => setShowPassword(!showPassword)}
+              style={{ cursor: "pointer" }}
             >
-              <i className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+              <i className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"}`}></i>
             </span>
           </div>
         </div>
@@ -132,15 +129,11 @@ const Login = ({ onLogin }) => {
         </div>
 
         <div className="field">
-          <button
-            type="submit"
-            className="button is-primary is-fullwidth"
-          >
+          <button type="submit" className="button is-primary is-fullwidth">
             Giriş Yap
           </button>
         </div>
       </form>
-
     </>
   );
 };
